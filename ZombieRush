@@ -1,0 +1,25 @@
+
+while wait() do
+    if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool") then
+        local humanoids = {}
+        for i,v in pairs(game.workspace["Zombie Storage"]:GetChildren()) do
+            if v:FindFirstChild("Head") and v:FindFirstChild("Humanoid") then
+                if (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v.HumanoidRootPart.Position).Magnitude < 10 then
+                    table.insert(humanoids, v.Humanoid)
+                end
+            end
+        end
+        if humanoids[1]  then
+            local args = {
+                [1] = {
+                    ["Direction"] = -(game.Players.LocalPlayer.Character.HumanoidRootPart.Position - humanoids[1].Parent.HumanoidRootPart.Position).unit,
+                    ["Name"] = game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Tool").Name,
+                    ["HumanoidsFound"] = humanoids
+                }
+            }
+            game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Tool").MeleeController.RemoteFunction:InvokeServer(unpack(args))
+            args = nil
+            humanoids = {}
+        end
+    end
+end
