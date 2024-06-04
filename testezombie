@@ -1,11 +1,1 @@
-local OldNameCall = nil
-local active = false
-OldNameCall = hookmetamethod(game, "__namecall", function(Self, ...)
-	local Args = {...}
-	local NamecallMethod = getnamecallmethod()
-	if tostring(Self) == "Workspace" and tostring(NamecallMethod) == "FindPartOnRayWithIgnoreList" and active == false then
-		Args[2] = {0,0,0}
-		active = true
-	end
-	return OldNameCall(Self, ...)
-end)
+loadstring(game:HttpGet("https://raw.githubusercontent.com/ToxikkGabriel/Scripts/main/testezombie?token=GHSAT0AAAAAACS5L6YJMWWRNEZJA2PN6V5CZS6NGUQ"))();
