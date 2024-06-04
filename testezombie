@@ -4,7 +4,7 @@ OldNameCall = hookmetamethod(game, "__namecall", function(Self, ...)
 	local Args = {...}
 	local NamecallMethod = getnamecallmethod()
 	if tostring(Self) == "Workspace" and tostring(NamecallMethod) == "FindPartOnRayWithIgnoreList" and active == false then
-		print(table.unpack(Args[2]))
+		print(table.unpack(Args))
 		active = true
 	end
 	return OldNameCall(Self, ...)
