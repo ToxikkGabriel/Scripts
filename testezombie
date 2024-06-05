@@ -8,32 +8,6 @@ local HttpService = game:GetService("HttpService")
 local LocalPlayer = Players.LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
 
-local ExpectedArguments = {
-	FindPartOnRayWithIgnoreList = {
-		ArgCountRequired = 3,
-		Args = {
-			"Instance", "Ray", "table", "boolean", "boolean"
-		}
-	},
-	FindPartOnRayWithWhitelist = {
-		ArgCountRequired = 3,
-		Args = {
-			"Instance", "Ray", "table", "boolean"
-		}
-	},
-	FindPartOnRay = {
-		ArgCountRequired = 2,
-		Args = {
-			"Instance", "Ray", "Instance", "boolean", "boolean"
-		}
-	},
-	Raycast = {
-		ArgCountRequired = 3,
-		Args = {
-			"Instance", "Vector3", "Vector3", "RaycastParams"
-		}
-	}
-}
 local Target
 function getTarget()
 	local maxDist = 300
@@ -61,13 +35,15 @@ oldNamecall = hookmetamethod(game, "__namecall", newcclosure(function(...)
 	local Method = getnamecallmethod()
 	local Arguments = {...}
 	local self = Arguments[1]
-	if Method == "FindPartOnRayWithIgnoreList" and not checkcaller() then
-		local A_Ray = Arguments[2]
-		local Origin = A_Ray.Origin
-		local Direction = ((Origin - Target).Unit * -1) * 1000
-		Arguments[2] = Ray.new(Origin, Direction)
+	if not checkcaller() then
+		if Method == "FindPartOnRayWithIgnoreList" then
+			local A_Ray = Arguments[2]
+			local Origin = A_Ray.Origin
+			local Direction = ((Origin - Target).Unit * -1) * 1000
+			Arguments[2] = Ray.new(Origin, Direction)
 
-		return oldNamecall(unpack(Arguments))
+			return oldNamecall(unpack(Arguments))
+		end
 	end
 	return oldNamecall(...)
 end))
