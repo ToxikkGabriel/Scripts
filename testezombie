@@ -9,7 +9,7 @@ local LocalPlayer = Players.LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
 
 local Target
-function getTarget()
+local function getTarget()
 	local maxDist = 300
 	Target = Vector3.new(0,0,0)
 	if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character.HumanoidRootPart then
@@ -27,6 +27,15 @@ end
 spawn(function()
 	while wait(0.1) do
 		getTarget()
+		for i,v in pairs(game.Workspace:GetChildren()) do
+			if v.Name == "Zombie King" or v.Name == "Super Phantom" or v.Name == "Slime Zombie" then
+				if v:FindFirstChild("Humanoid") and v:FindFirstChild("Head") then
+					if v.Humanoid.Health > 0  then
+						v.Parent = game.Workspace["Zombie Storage"]
+					end
+				end
+			end
+		end
 	end
 end)
 game.Players.LocalPlayer.PlayerScripts.PlayerModule.CameraModule:Destroy()
@@ -36,11 +45,12 @@ oldNamecall = hookmetamethod(game, "__namecall", newcclosure(function(...)
 	local Arguments = {...}
 	local self = Arguments[1]
 	if not checkcaller() then
-		if Method == "FindPartOnRayWithIgnoreList" then
+		if self == workspace and Method == "FindPartOnRayWithIgnoreList" then
 			local A_Ray = Arguments[2]
 			local Origin = A_Ray.Origin
 			local Direction = ((Origin - Target).Unit * -1) * 1000
 			Arguments[2] = Ray.new(Origin, Direction)
+			table.insert(Arguments[3], self["Map Storage"])
 
 			return oldNamecall(unpack(Arguments))
 		end
