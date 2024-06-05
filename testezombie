@@ -1,11 +1,57 @@
-local OldNameCall = nil
-local active = false
-OldNameCall = hookmetamethod(game, "__namecall", function(Self, ...)
-	local Args = {...}
-	local NamecallMethod = getnamecallmethod()
-	if tostring(Self) == "Workspace" and tostring(NamecallMethod) == "FindPartOnRayWithIgnoreList" and active == false then
-		print(table.unpack(Args))
-		active = true
+local Camera = workspace.CurrentCamera
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local GuiService = game:GetService("GuiService")
+local UserInputService = game:GetService("UserInputService")
+local HttpService = game:GetService("HttpService")
+
+local LocalPlayer = Players.LocalPlayer
+local Mouse = LocalPlayer:GetMouse()
+
+local ExpectedArguments = {
+	FindPartOnRayWithIgnoreList = {
+		ArgCountRequired = 3,
+		Args = {
+			"Instance", "Ray", "table", "boolean", "boolean"
+		}
+	},
+	FindPartOnRayWithWhitelist = {
+		ArgCountRequired = 3,
+		Args = {
+			"Instance", "Ray", "table", "boolean"
+		}
+	},
+	FindPartOnRay = {
+		ArgCountRequired = 2,
+		Args = {
+			"Instance", "Ray", "Instance", "boolean", "boolean"
+		}
+	},
+	Raycast = {
+		ArgCountRequired = 3,
+		Args = {
+			"Instance", "Vector3", "Vector3", "RaycastParams"
+		}
+	}
+}
+
+
+local oldNamecall
+oldNamecall = hookmetamethod(game, "__namecall", newcclosure(function(...)
+	local Method = getnamecallmethod()
+	local Arguments = {...}
+	local self = Arguments[1]
+	if Method == "FindPartOnRayWithIgnoreList" then
+		local A_Ray = Arguments[2]
+
+		local HitPart = game.Players.LocalPlayer.Character.HumanoidRootPart
+		if HitPart then
+			local Origin = A_Ray.Origin
+			local Direction = (Origin - HitPart.Position).Unit * 1000
+			Arguments[2] = Ray.new(Origin, Direction)
+
+			return oldNamecall(unpack(Arguments))
+		end
 	end
-	return OldNameCall(Self, ...)
-end)
+	return oldNamecall(...)
+end))
