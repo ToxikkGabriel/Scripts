@@ -1,5 +1,5 @@
 while wait() do
-    if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool") then
+    if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool") and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool"):FindFirstChild("MeleeController") then
         local humanoids = {}
         for i,v in pairs(game.workspace["Zombie Storage"]:GetChildren()) do
             if v:FindFirstChild("Head") and v:FindFirstChild("Humanoid") then
@@ -8,7 +8,7 @@ while wait() do
                 end
             end
         end
-        if humanoids[1] and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool") then
+        if humanoids[1] and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool") and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool"):FindFirstChild("MeleeController") then
             local args = {
                 [1] = {
                     ["Direction"] = -(game.Players.LocalPlayer.Character.HumanoidRootPart.Position - humanoids[1].Parent.HumanoidRootPart.Position).unit,
