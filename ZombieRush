@@ -1,4 +1,3 @@
-
 while wait() do
     if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool") then
         local humanoids = {}
@@ -9,7 +8,7 @@ while wait() do
                 end
             end
         end
-        if humanoids[1]  then
+        if humanoids[1] and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool") then
             local args = {
                 [1] = {
                     ["Direction"] = -(game.Players.LocalPlayer.Character.HumanoidRootPart.Position - humanoids[1].Parent.HumanoidRootPart.Position).unit,
