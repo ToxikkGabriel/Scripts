@@ -14,7 +14,17 @@ local function getTarget()
 	Target = Vector3.new(0,0,0)
 	if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character.HumanoidRootPart then
 		for i,v in pairs(game.Workspace["Zombie Storage"]:GetChildren()) do
-			if v:FindFirstChild("Humanoid") and v:FindFirstChild("Head") then
+			if v:FindFirstChild("Humanoid") and v:FindFirstChild("Humanoid").Health > 0 and v:FindFirstChild("Head") and v.Name == "Zombie King" or v.Name == "Super Phantom" or v.Name == "Slime Zombie" then
+				local dist = (v.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
+				if dist <= maxDist then
+					maxDist = dist
+					Target = v.Head.Position
+					return
+				end
+			end
+		end
+		for i,v in pairs(game.Workspace["Zombie Storage"]:GetChildren()) do
+			if v:FindFirstChild("Humanoid") and v:FindFirstChild("Humanoid").Health > 0 and v:FindFirstChild("Head") then
 				local dist = (v.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
 				if dist <= maxDist then
 					maxDist = dist
@@ -38,14 +48,13 @@ spawn(function()
 		end
 	end
 end)
-game.Players.LocalPlayer.PlayerScripts.PlayerModule.CameraModule:Destroy()
 local oldNamecall
 oldNamecall = hookmetamethod(game, "__namecall", newcclosure(function(...)
 	local Method = getnamecallmethod()
 	local Arguments = {...}
 	local self = Arguments[1]
 	if not checkcaller() then
-		if self == workspace and Method == "FindPartOnRayWithIgnoreList" then
+		if self == workspace and Method == "FindPartOnRayWithIgnoreList" and tostring(getcallingscript()) == "GunController" then
 			local A_Ray = Arguments[2]
 			local Origin = A_Ray.Origin
 			local Direction = ((Origin - Target).Unit * -1) * 1000
