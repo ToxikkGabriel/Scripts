@@ -1,0 +1,45 @@
+local Camera = workspace.CurrentCamera
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local GuiService = game:GetService("GuiService")
+local UserInputService = game:GetService("UserInputService")
+local HttpService = game:GetService("HttpService")
+
+local LocalPlayer = Players.LocalPlayer
+local Mouse = LocalPlayer:GetMouse()
+
+local Target
+local function getTarget()
+	local maxDist = 300
+	Target = Vector3.new(0,0,0)
+	if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character.HumanoidRootPart then
+		for i,v in pairs(game.Workspace["Zombie Storage"]:GetChildren()) do
+			if v:FindFirstChild("Humanoid") and v:FindFirstChild("Humanoid").Health > 0 and v:FindFirstChild("Head") then
+				local dist = (v.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
+				if dist <= maxDist then
+					maxDist = dist
+					Target = v.Head.Position
+				end
+			end
+		end
+	end
+end
+
+local oldNamecall
+oldNamecall = hookmetamethod(game, "__namecall", newcclosure(function(...)
+	local Method = getnamecallmethod()
+	local Arguments = {...}
+	local self = Arguments[1]
+	if not checkcaller() then
+		if self == workspace and Method == "FindPartOnRayWithIgnoreList" and tostring(getcallingscript()) == "GunController" and Target then
+			local A_Ray = Arguments[2]
+			local Origin = A_Ray.Origin
+			local Direction = ((Origin - Target).Unit * -1) * 1000
+			Arguments[2] = Ray.new(Origin, Direction)
+			table.insert(Arguments[3], self["Map Storage"])
+
+			return oldNamecall(unpack(Arguments))
+		end
+	end
+	return oldNamecall(...)
+end))
