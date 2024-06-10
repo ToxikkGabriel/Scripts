@@ -16,7 +16,7 @@ local function getTarget()
 		for i,v in pairs(game.Workspace["Zombie Storage"]:GetChildren()) do
 			if v:FindFirstChild("Humanoid") and v:FindFirstChild("Humanoid").Health > 0 and v:FindFirstChild("Head") then
 				local dist = (v.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
-				if v.Name == "Zombie King" or v.Name == "Super Phantom" or v.Name == "Slime Zombie" and dist < 30 then
+				if v.Name == "Zombie King" or v.Name == "Super Phantom" or v.Name == "Slime Zombie" and dist < 50 then
 					Target = v.Head.Position
 					return
 				end
