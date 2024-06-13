@@ -52,7 +52,7 @@ oldNamecall = hookmetamethod(game, "__namecall", newcclosure(function(...)
 	local Arguments = {...}
 	local self = Arguments[1]
 	if not checkcaller() then
-		if self == workspace and Method == "FindPartOnRayWithIgnoreList" and tostring(getcallingscript()) == "GunController" and Target then
+		if self == workspace and Method == "FindPartOnRayWithIgnoreList" and Target then
 			local A_Ray = Arguments[2]
 			local Origin = A_Ray.Origin
 			local Direction = ((Origin - Target).Unit * -1) * 1000
