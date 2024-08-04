@@ -1,0 +1,38 @@
+local TweenService = game:GetService("TweenService")
+
+function teleportPlayer(player, targetPosition)
+    local character = player.Character
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        local humanoidRootPart = character.HumanoidRootPart
+        
+        -- Cria as informações do tween
+        local tweenInfo = TweenInfo.new(
+            3, -- Duração do tween em segundos
+            Enum.EasingStyle.Linear, -- Estilo de animação
+            Enum.EasingDirection.Out -- Direção da animação
+        )
+
+        -- Cria a tabela de propriedades alvo para o tween
+        local goal = {}
+        goal.CFrame = CFrame.new(targetPosition)
+
+        -- Cria o tween
+        local tween = TweenService:Create(humanoidRootPart, tweenInfo, goal)
+
+        -- Reproduz o tween
+        tween:Play()
+        
+        -- Espera o tween terminar
+        tween.Completed:Wait()
+        
+        -- Ajusta a posição final para garantir que o jogador está exatamente no ponto alvo
+        humanoidRootPart.CFrame = CFrame.new(targetPosition)
+    end
+end
+
+for i,v in pairs(game.Workspace.Monsters:GetChildren()) do
+  if string.lower(string.sub(v.Name,1,4)) == "vici" or string.lower(string.sub(v.Name,1,4)) == "gift" then
+    print("Found")
+    teleportPlayer(game.Players.LocalPlayer, v:FindFirstChild("HumanoidRootPart").Position)
+  end
+end
