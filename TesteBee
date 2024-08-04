@@ -1,5 +1,6 @@
 for i,v in pairs(game.Workspace.Monsters:GetChildren()) do
   if string.lower(string.sub(v.Name,1,4)) == "vici" or string.lower(string.sub(v.Name,1,4)) == "gift" then
+    print("Found")
     game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v:FindFirstChild("HumanoidRootPart").CFrame
   end
 end
