@@ -2823,15 +2823,12 @@ function TreeFarm(TP)
 							if _G.TreeAutoFarm == false and _G.TreeAura == false then TFCO = false return end
 							if not v or v == nil then TFCO = false return end
 							if not TFOUND then TFCO = false return end
-							task.wait()
 							if RemoteAntiBan == false then
 								RemoteAntiBan = true
 								if TP == true then
 									TeleportV4(v.Position + Vector3.new(0,0,6))
-									task.wait()
 								end
 								game:GetService("ReplicatedStorage").rbxts_include.node_modules["@rbxts"].net.out._NetManaged.CLIENT_BLOCK_HIT_REQUEST:InvokeServer(args1)
-								-- task.wait()
 								if v:FindFirstChild("trunk") or v:FindFirstChildWhichIsA("MeshPart") then
 								else
 									TFOUND = nil
@@ -2841,7 +2838,6 @@ function TreeFarm(TP)
 						end
 					end
 				else
-					task.wait(0.2)
 					TFCO = false
 					break
 				end 
@@ -2851,9 +2847,6 @@ function TreeFarm(TP)
 		end	 
 
 	end
-
-	task.wait()
-
 	TFCO = false
 
 end
