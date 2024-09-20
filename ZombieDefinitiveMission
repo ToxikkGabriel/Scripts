@@ -1,0 +1,99 @@
+local Camera = workspace.CurrentCamera
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local GuiService = game:GetService("GuiService")
+local UserInputService = game:GetService("UserInputService")
+local HttpService = game:GetService("HttpService")
+
+local LocalPlayer = Players.LocalPlayer
+local Mouse = LocalPlayer:GetMouse()
+
+local MissionsPath = game:GetService("Players").LocalPlayer.PlayerGui.MainGui.Missions.Container.Frame
+
+local normalZombies = {"Diamond", "Gold", "Combustion", "Amethyst", "Emerald", "Obsidian", "Phantom" , "Silver", "Wraith", "Normal"}
+local skeletons = {"Diamond Skeleton"}
+local bruteZombies = {"Diamond Brute", "Silver Brute", "Gold Brute", "Normal Brute", "Ruby Brute", "Emerald Brute", "Phantom Brute"}
+
+local function checkMissions()
+	local Zombies = {}
+	for i, v in pairs(MissionsPath:GetChildren()) do
+		if v.Name ~= "UIGridLayout" then
+			local MissionString = tostring(v.Mission.Text)
+			local words = string.split(MissionString, " ")
+			if words[1] == "Kill" then
+				if words[3] == "Zombies" then
+					table.insert(Zombies, words[2])
+				elseif words[3] == "Brute" then
+					table.insert(Zombies, (words[2].. " " ..words[3]))
+				end
+			end
+		end
+	end
+	return Zombies
+end
+
+local Target
+local function getTarget()
+	local maxDist = 300
+	Target = Vector3.new(0,0,0)
+	if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character.HumanoidRootPart and game.Players.LocalPlayer.Character.Humanoid.Health > 0 then
+		for i,v in pairs(game.Workspace["Zombie Storage"]:GetChildren()) do
+			if v:FindFirstChild("Humanoid") and v:FindFirstChild("Humanoid").Health > 0 and v:FindFirstChild("Head") then
+				if v.Name == "Zombie King" or v.Name == "Super Phantom" or v.Name == "Slime Zombie" then
+					Target = v.Head.Position
+					return
+				end
+				local ZombiesRequired = checkMissions()
+				if table.find(ZombiesRequired, v.Name) then
+					Target = v.Head.Position
+				end
+			end
+		end
+		for i,v in pairs(game.Workspace["Zombie Storage"]:GetChildren()) do
+			if v:FindFirstChild("Humanoid") and v:FindFirstChild("Humanoid").Health > 0 and v:FindFirstChild("Head") then
+				if v.Name == "Zombie King" or v.Name == "Super Phantom" or v.Name == "Slime Zombie" then
+					Target = v.Head.Position
+					return
+				end
+				local dist = (v.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
+				if dist <= maxDist then
+					maxDist = dist
+					Target = v.Head.Position
+				end
+			end
+		end
+	end
+end
+spawn(function()
+	while wait(0.1) do
+		getTarget()
+		for i,v in pairs(game.Workspace:GetChildren()) do
+			if v.Name == "Zombie King" or v.Name == "Super Phantom" or v.Name == "Slime Zombie" then
+				if v:FindFirstChild("Humanoid") and v:FindFirstChild("Head") then
+					if v.Humanoid.Health > 0  then
+						v.Parent = game.Workspace["Zombie Storage"]
+					end
+				end
+			end
+		end
+	end
+end)
+local oldNamecall
+oldNamecall = hookmetamethod(game, "__namecall", newcclosure(function(...)
+	local Method = getnamecallmethod()
+	local Arguments = {...}
+	local self = Arguments[1]
+	if not checkcaller() then
+		if self == workspace and Method == "FindPartOnRayWithIgnoreList" and tostring(getcallingscript().Name) == "GunController" and Target then
+			print()
+			local A_Ray = Arguments[2]
+			local Origin = A_Ray.Origin
+			local Direction = ((Origin - Target).Unit * -1) * 1000
+			Arguments[2] = Ray.new(Origin, Direction)
+			table.insert(Arguments[3], self["Map Storage"])
+
+			return oldNamecall(unpack(Arguments))
+		end
+	end
+	return oldNamecall(...)
+end))
