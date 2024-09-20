@@ -23,8 +23,10 @@ local function checkMissions()
 			if words[1] == "Kill" then
 				if words[3] == "Zombies" then
 					table.insert(Zombies, words[2])
+					print(words[2])
 				elseif words[3] == "Brute" then
 					table.insert(Zombies, (words[2].. " " ..words[3]))
+					print(words[2].. " " ..words[3])
 				end
 			end
 		end
