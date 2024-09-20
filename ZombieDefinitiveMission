@@ -48,6 +48,7 @@ local function getTarget()
 					if table.find(ZombiesRequired, v.Name) then
 						Target = v.Head.Position
 						print("Found" .. v.Name)
+						return
 					end
 				end
 			end
