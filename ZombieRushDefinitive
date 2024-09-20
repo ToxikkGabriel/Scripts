@@ -12,7 +12,7 @@ local Target
 local function getTarget()
 	local maxDist = 300
 	Target = Vector3.new(0,0,0)
-	if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character.HumanoidRootPart then
+	if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character.HumanoidRootPart and game.Players.LocalPlayer.Character.Humanoid.Health > 0 then
 		for i,v in pairs(game.Workspace["Zombie Storage"]:GetChildren()) do
 			if v:FindFirstChild("Humanoid") and v:FindFirstChild("Humanoid").Health > 0 and v:FindFirstChild("Head") then
 				if v.Name == "Zombie King" or v.Name == "Super Phantom" or v.Name == "Slime Zombie" then
