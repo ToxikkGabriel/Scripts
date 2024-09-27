@@ -40,26 +40,29 @@ local function toggleActive()
 end
 
 -- Criando a interface gráfica do botão
-local ScreenGui = Instance.new("ScreenGui")
-local Button = Instance.new("TextButton")
+local function createGui()
+	local ScreenGui = Instance.new("ScreenGui")
+	local Button = Instance.new("TextButton")
 
--- Configurando o ScreenGui para aparecer na tela
-ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+	-- Configurando o ScreenGui para aparecer na tela
+	ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
--- Configurando o botão
-Button.Parent = ScreenGui
-Button.Text = "Activar/Desativar"
-Button.Size = UDim2.new(0, 200, 0, 50) -- Largura: 200px, Altura: 50px
-Button.Position = UDim2.new(0.9, -200, 0.9, -50) -- Posição relativa: 90% da tela no eixo X e Y, com ajuste de -200px no X e -50px no Y para manter no canto
-Button.BackgroundColor3 = Color3.fromRGB(0, 170, 255) -- Cor do botão
+	-- Configurando o botão
+	Button.Parent = ScreenGui
+	Button.Text = "Activar/Desativar"
+	Button.Size = UDim2.new(0, 200, 0, 50) -- Largura: 200px, Altura: 50px
+	Button.Position = UDim2.new(0.9, -200, 0.9, -50) -- Posição relativa: 90% da tela no eixo X e Y, com ajuste de -200px no X e -50px no Y para manter no canto
+	Button.BackgroundColor3 = Color3.fromRGB(0, 170, 255) -- Cor do botão
 
 
-Button.MouseButton1Click:Connect(toggleActive)
+	Button.MouseButton1Click:Connect(toggleActive)
+end
+
 game.Players.LocalPlayer.CharacterAdded:Connect(function()
 	-- Mover o ScreenGui para PlayerGui quando o jogador reaparece
-	ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+	createGui()
 end)
-
+createGui()
 local Target
 local function getTarget()
 	local maxDist = 300
