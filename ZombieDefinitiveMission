@@ -32,36 +32,72 @@ local function checkMissions()
 	return Zombies
 end
 
+local active = false
+
+-- Função que troca o valor de 'active' quando o botão for clicado
+local function toggleActive()
+	active = not active
+end
+
+-- Criando a interface gráfica do botão
+local function createGui()
+	if game.Players.LocalPlayer:WaitForChild("PlayerGui"):FindFirstChild("Executed") then
+		game.Players.LocalPlayer:WaitForChild("PlayerGui"):FindFirstChild("Executed"):Destroy()
+	end
+	local ScreenGui = Instance.new("ScreenGui")
+	local Button = Instance.new("TextButton")
+
+	-- Configurando o ScreenGui para aparecer na tela
+	ScreenGui.Name = "Executed"
+	ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+	-- Configurando o botão
+	Button.Parent = ScreenGui
+	Button.Text = "Activar/Desativar"
+	Button.Size = UDim2.new(0, 200, 0, 50) -- Largura: 200px, Altura: 50px
+	Button.Position = UDim2.new(0.9, -200, 0.9, -50) -- Posição relativa: 90% da tela no eixo X e Y, com ajuste de -200px no X e -50px no Y para manter no canto
+	Button.BackgroundColor3 = Color3.fromRGB(0, 170, 255) -- Cor do botão
+
+
+	Button.MouseButton1Click:Connect(toggleActive)
+end
+
+game.Players.LocalPlayer.CharacterAdded:Connect(function()
+	-- Mover o ScreenGui para PlayerGui quando o jogador reaparece
+	createGui()
+end)
+createGui()
 local Target
 local function getTarget()
 	local maxDist = 300
 	Target = Vector3.new(0,0,0)
-	if game.Players.LocalPlayer.Character:FindFirstChild("Humanoid").Health > 0 then
-		if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-			for i,v in pairs(game.Workspace["Zombie Storage"]:GetChildren()) do
-				if v:FindFirstChild("Humanoid") and v:FindFirstChild("Humanoid").Health > 0 and v:FindFirstChild("Head") then
-					if v.Name == "Zombie King" or v.Name == "Super Phantom" or v.Name == "Slime Zombie" then
-						Target = v.Head.Position
-						return
-					end
-					local ZombiesRequired = checkMissions()
-					if table.find(ZombiesRequired, v.Name) then
-						Target = v.Head.Position
-						print("Found" .. v.Name)
-						return
+	if game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and active then
+		if game.Players.LocalPlayer.Character:FindFirstChild("Humanoid").Health > 0 and active then
+			if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+				for i,v in pairs(game.Workspace["Zombie Storage"]:GetChildren()) do
+					if v:FindFirstChild("Humanoid") and v:FindFirstChild("Humanoid").Health > 0 and v:FindFirstChild("Head") then
+						if v.Name == "Zombie King" or v.Name == "Super Phantom" or v.Name == "Slime Zombie" then
+							Target = v.Head.Position
+							return
+						end
+						local ZombiesRequired = checkMissions()
+						if table.find(ZombiesRequired, v.Name) then
+							Target = v.Head.Position
+							return
+						end
 					end
 				end
-			end
-			for i,v in pairs(game.Workspace["Zombie Storage"]:GetChildren()) do
-				if v:FindFirstChild("Humanoid") and v:FindFirstChild("Humanoid").Health > 0 and v:FindFirstChild("Head") then
-					if v.Name == "Zombie King" or v.Name == "Super Phantom" or v.Name == "Slime Zombie" then
-						Target = v.Head.Position
-						return
-					end
-					local dist = (v.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
-					if dist <= maxDist then
-						maxDist = dist
-						Target = v.Head.Position
+				for i,v in pairs(game.Workspace["Zombie Storage"]:GetChildren()) do
+					if v:FindFirstChild("Humanoid") and v:FindFirstChild("Humanoid").Health > 0 and v:FindFirstChild("Head") then
+						if v.Name == "Zombie King" or v.Name == "Super Phantom" or v.Name == "Slime Zombie" then
+							Target = v.Head.Position
+							return
+						end
+						local dist = (v.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
+						if dist <= maxDist then
+							maxDist = dist
+							Target = v.Head.Position
+						end
 					end
 				end
 			end
@@ -70,12 +106,14 @@ local function getTarget()
 end
 spawn(function()
 	while wait(0.1) do
-		getTarget()
-		for i,v in pairs(game.Workspace:GetChildren()) do
-			if v.Name == "Zombie King" or v.Name == "Super Phantom" or v.Name == "Slime Zombie" then
-				if v:FindFirstChild("Humanoid") and v:FindFirstChild("Head") then
-					if v.Humanoid.Health > 0  then
-						v.Parent = game.Workspace["Zombie Storage"]
+		if active then
+			getTarget()
+			for i,v in pairs(game.Workspace:GetChildren()) do
+				if v.Name == "Zombie King" or v.Name == "Super Phantom" or v.Name == "Slime Zombie" then
+					if v:FindFirstChild("Humanoid") and v:FindFirstChild("Head") then
+						if v.Humanoid.Health > 0  then
+							v.Parent = game.Workspace["Zombie Storage"]
+						end
 					end
 				end
 			end
@@ -87,7 +125,7 @@ oldNamecall = hookmetamethod(game, "__namecall", newcclosure(function(...)
 	local Method = getnamecallmethod()
 	local Arguments = {...}
 	local self = Arguments[1]
-	if not checkcaller() then
+	if not checkcaller() and active then
 		if self == workspace and Method == "FindPartOnRayWithIgnoreList" and tostring(getcallingscript().Name) == "GunController" and Target then
 			local A_Ray = Arguments[2]
 			local Origin = A_Ray.Origin
