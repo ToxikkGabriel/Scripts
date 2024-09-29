@@ -193,8 +193,11 @@ spawn(function()
 		end
 	end
 end)
-local oldNamecall
-oldNamecall = hookmetamethod(game, "__namecall", newcclosure(function(...)
+local mt = getrawmetatable(game)
+setreadonly(mt, false)
+local backupindex = mt.__index
+
+mt.__namecall = newcclosure(function(...)
 	local Method = getnamecallmethod()
 	local Arguments = {...}
 	local self = Arguments[1]
@@ -206,8 +209,8 @@ oldNamecall = hookmetamethod(game, "__namecall", newcclosure(function(...)
 			Arguments[2] = Ray.new(Origin, Direction)
 			table.insert(Arguments[3], self["Map Storage"])
 
-			return oldNamecall(unpack(Arguments))
+			return backupindex(unpack(Arguments))
 		end
 	end
-	return oldNamecall(...)
-end))
+	return backupindex(...)
+end)
