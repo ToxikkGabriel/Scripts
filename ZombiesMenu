@@ -36,29 +36,45 @@ local active1 = false
 local active2 = false
 local active3 = false
 
--- Função que troca o valor de 'active' quando o botão for clicado
+local Button1
+local Button2
+local Button3
+
 local function toggleActive1()
 	active1 = not active1
+	if active1 == false then
+		Button1.Text = "Silent Aim OFF"
+	else
+		Button1.Text = "Silent Aim ON"
+	end
 	print("Active1 is now: ", active1)
 end
 
 local function toggleActive2()
 	active2 = not active2
+	if active2 == false then
+		Button2.Text = "Kill Aura OFF"
+	else
+		Button2.Text = "Kill Aura ON"
+	end
 	print("Active2 is now: ", active2)
 end
 
 local function toggleActive3()
 	active3 = not active3
+	if active3 == false then
+		Button3.Text = "Duplicar OFF"
+	else
+		Button3.Text = "Duplicar ON"
+	end
 	print("Active3 is now: ", active3)
 end
-
--- Criando a interface gráfica do botão
 local function createGui()
 	if not game.Players.LocalPlayer:WaitForChild("PlayerGui"):FindFirstChild("Executed") then
 		local ScreenGui = Instance.new("ScreenGui")
-		local Button1 = Instance.new("TextButton")
-		local Button2 = Instance.new("TextButton")
-		local Button3 = Instance.new("TextButton")
+		Button1 = Instance.new("TextButton")
+		Button2 = Instance.new("TextButton")
+		Button3 = Instance.new("TextButton")
 
 		-- Configurando o ScreenGui para aparecer na tela
 		ScreenGui.Name = "Executed"
@@ -66,21 +82,24 @@ local function createGui()
 
 		-- Configurando o primeiro botão (Button1)
 		Button1.Parent = ScreenGui
-		Button1.Text = "Activar/Desativar"
+		Button1.Text = "Silent Aim OFF"
+		Button1.TextScaled = true
 		Button1.Size = UDim2.new(0, 200, 0, 50) -- Largura: 200px, Altura: 50px
 		Button1.Position = UDim2.new(0.9, -200, 0.7, -50) -- Posição relativa
 		Button1.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
 
 		-- Configurando o segundo botão (Button2)
 		Button2.Parent = ScreenGui
-		Button2.Text = "Kill Aura"
+		Button2.Text = "Kill Aura OFF"
+		Button2.TextScaled = true
 		Button2.Size = UDim2.new(0, 200, 0, 50) 
 		Button2.Position = UDim2.new(0.9, -200, 0.7, 10) -- Posição 10px abaixo do primeiro botão
 		Button2.BackgroundColor3 = Color3.fromRGB(255, 170, 0)
 
 		-- Configurando o terceiro botão (Button3)
 		Button3.Parent = ScreenGui
-		Button3.Text = "Pegar Primeira(pegue a secundaria primeiro)"
+		Button3.Text = "Duplicar OFF"
+		Button3.TextScaled = true
 		Button3.Size = UDim2.new(0, 200, 0, 50)
 		Button3.Position = UDim2.new(0.9, -200, 0.7, 70) -- Posição 70px abaixo do primeiro botão
 		Button3.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
@@ -99,7 +118,7 @@ end)
 createGui()
 local Target
 local function getTarget()
-	local maxDist = 300
+	local maxDist = 500
 	Target = Vector3.new(0,0,0)
 	if game.Players.LocalPlayer.Character:FindFirstChild("Humanoid").Health > 0 and active1 then
 		if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
@@ -180,7 +199,7 @@ spawn(function()
 	end
 end)
 spawn(function()
-	while wait(0.1) do
+	while wait(0.05) do
 		getTarget()
 		for i,v in pairs(game.Workspace:GetChildren()) do
 			if v.Name == "Zombie King" or v.Name == "Super Phantom" or v.Name == "Slime Zombie" then
@@ -195,7 +214,7 @@ spawn(function()
 end)
 local mt = getrawmetatable(game)
 setreadonly(mt, false)
-local backupindex = mt.__index
+local backupindex = mt.__namecall
 
 mt.__namecall = newcclosure(function(...)
 	local Method = getnamecallmethod()
