@@ -1,0 +1,262 @@
+local Camera = workspace.CurrentCamera
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local GuiService = game:GetService("GuiService")
+local UserInputService = game:GetService("UserInputService")
+local HttpService = game:GetService("HttpService")
+
+local LocalPlayer = Players.LocalPlayer
+local Mouse = LocalPlayer:GetMouse()
+
+local bossPrincipal = "Slime Zombie"
+
+local MissionsPath = game:GetService("Players").LocalPlayer.PlayerGui.MainGui.Missions.Container.Frame
+
+local normalZombies = {"Diamond", "Gold", "Combustion", "Amethyst", "Emerald", "Obsidian", "Phantom" , "Silver", "Wraith", "Normal"}
+local skeletons = {"Diamond Skeleton"}
+local bruteZombies = {"Diamond Brute", "Silver Brute", "Gold Brute", "Normal Brute", "Ruby Brute", "Emerald Brute", "Phantom Brute"}
+
+local function checkMissions()
+	local Zombies = {}
+	for i, v in pairs(MissionsPath:GetChildren()) do
+		if v.Name ~= "UIGridLayout" then
+			local MissionString = v.Mission.Text
+			local words = string.split(MissionString, " ")
+			if words[1] == "Kill" then
+				if words[3] == "Zombies" then
+					table.insert(Zombies, words[2])
+				elseif words[3] == "Brute" then
+					table.insert(Zombies, (words[2].. " " ..words[3]))
+				end
+			end
+		end
+	end
+	return Zombies
+end
+
+local active1 = false
+local active2 = false
+local active3 = false
+
+local Button1
+local Button2
+local Button3
+
+local function toggleActive1()
+	active1 = not active1
+	if active1 == false then
+		Button1.Text = "Silent Aim OFF"
+	else
+		Button1.Text = "Silent Aim ON"
+	end
+	print("Active1 is now: ", active1)
+end
+
+local function toggleActive2()
+	active2 = not active2
+	if active2 == false then
+		Button2.Text = "Kill Aura OFF"
+	else
+		Button2.Text = "Kill Aura ON"
+	end
+	print("Active2 is now: ", active2)
+end
+
+local function toggleActive3()
+	active3 = not active3
+	if active3 == false then
+		Button3.Text = "Duplicar OFF"
+	else
+		Button3.Text = "Duplicar ON"
+	end
+	print("Active3 is now: ", active3)
+end
+local function createGui()
+	if not game.Players.LocalPlayer:WaitForChild("PlayerGui"):FindFirstChild("Executed") then
+		local ScreenGui = Instance.new("ScreenGui")
+		Button1 = Instance.new("TextButton")
+		Button2 = Instance.new("TextButton")
+		Button3 = Instance.new("TextButton")
+
+		-- Configurando o ScreenGui para aparecer na tela
+		ScreenGui.Name = "Executed"
+		ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+		-- Configurando o primeiro botão (Button1)
+		Button1.Parent = ScreenGui
+		Button1.Text = "Silent Aim OFF"
+		Button1.TextScaled = true
+		Button1.Size = UDim2.new(0, 200, 0, 50) -- Largura: 200px, Altura: 50px
+		Button1.Position = UDim2.new(0.9, -200, 0.7, -50) -- Posição relativa
+		Button1.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+
+		-- Configurando o segundo botão (Button2)
+		Button2.Parent = ScreenGui
+		Button2.Text = "Kill Aura OFF"
+		Button2.TextScaled = true
+		Button2.Size = UDim2.new(0, 200, 0, 50) 
+		Button2.Position = UDim2.new(0.9, -200, 0.7, 10) -- Posição 10px abaixo do primeiro botão
+		Button2.BackgroundColor3 = Color3.fromRGB(255, 170, 0)
+
+		-- Configurando o terceiro botão (Button3)
+		Button3.Parent = ScreenGui
+		Button3.Text = "Duplicar OFF"
+		Button3.TextScaled = true
+		Button3.Size = UDim2.new(0, 200, 0, 50)
+		Button3.Position = UDim2.new(0.9, -200, 0.7, 70) -- Posição 70px abaixo do primeiro botão
+		Button3.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+
+		-- Funções dos botões para alternar os valores de 'active'
+		Button1.MouseButton1Click:Connect(toggleActive1)
+		Button2.MouseButton1Click:Connect(toggleActive2)
+		Button3.MouseButton1Click:Connect(toggleActive3)
+	end
+end
+
+game.Players.LocalPlayer.CharacterAdded:Connect(function()
+	-- Mover o ScreenGui para PlayerGui quando o jogador reaparece
+	createGui()
+end)
+createGui()
+local Target
+
+local function checkHumanoid(char)
+	if char then
+		if char:FindFirstChild("Humanoid") then
+			if char:FindFirstChild("Humanoid").Health > 0 then
+				if char:FindFirstChild("Head") then
+					return true
+				end
+			end
+		end
+	end
+	return false
+end
+
+local function getTarget()
+	local maxDist = 500
+	Target = Vector3.new(0,0,0)
+	if game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid").Health > 0 and active1 then
+		if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+			for i,v in pairs(game.Workspace["Zombie Storage"]:GetChildren()) do
+				if checkHumanoid(v) == false then continue end
+				if bossPrincipal ~= nil then
+					if v.Name == bossPrincipal then
+						Target = v.Head.Position
+						return
+					end
+				end
+				if v.Name == "Zombie King" or v.Name == "Super Phantom" or v.Name == "Slime Zombie" then
+					Target = v.Head.Position
+					return
+				end
+				local ZombiesRequired = checkMissions()
+				if table.find(ZombiesRequired, v.Name) then
+					Target = v.Head.Position
+					print("Found" .. v.Name)
+					return
+				end
+			end
+			for i,v in pairs(game.Workspace["Zombie Storage"]:GetChildren()) do
+				if checkHumanoid(v) == false then continue end
+				if bossPrincipal ~= nil then
+					if v.Name == bossPrincipal then
+						Target = v.Head.Position
+						return
+					end
+				end
+				if v.Name == "Zombie King" or v.Name == "Super Phantom" or v.Name == "Slime Zombie" then
+					Target = v.Head.Position
+					return
+				end
+				local dist = (v.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
+				if dist <= maxDist then
+					maxDist = dist
+					Target = v.Head.Position
+				end
+			end
+		end
+	end
+end
+
+spawn(function()
+	while wait(0.1) do
+		if active2 then
+			if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool") and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool"):FindFirstChild("MeleeController") then
+				local humanoids = {}
+				for i,v in pairs(game.workspace["Zombie Storage"]:GetChildren()) do
+					if checkHumanoid(v) == false then continue end
+					if (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v.HumanoidRootPart.Position).Magnitude < 10 then
+						table.insert(humanoids, v.Humanoid)
+					end
+				end
+				if humanoids[1] and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool") and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool"):FindFirstChild("MeleeController") then
+					local args = {
+						[1] = {
+							["Direction"] = -(game.Players.LocalPlayer.Character.HumanoidRootPart.Position - humanoids[1].Parent.HumanoidRootPart.Position).unit,
+							["Name"] = game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Tool").Name,
+							["HumanoidsFound"] = humanoids
+						}
+					}
+					game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Tool").MeleeController.RemoteFunction:InvokeServer(unpack(args))
+					args = nil
+					humanoids = {}
+				end
+			end
+		end
+	end
+end)
+spawn(function()
+	while wait(0.1) do
+		if active3 then
+			if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid").Health > 0 then
+				if game.Players.LocalPlayer.Backpack:FindFirstChildOfClass("Tool") then
+					for i,v in pairs(game.Players.LocalPlayer.Backpack:GetChildren()) do
+						if v:IsA("Tool") then
+							if v:FindFirstChild("GunController") then
+								v.Parent = game.Players.LocalPlayer.Character
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+end)
+game:GetService("RunService").RenderStepped:Connect(function()
+	getTarget()
+	for i,v in pairs(game.Workspace:GetChildren()) do
+		if checkHumanoid(v) == false then continue end
+		if v.Name == "Zombie King" or v.Name == "Super Phantom" or v.Name == "Slime Zombie" then
+			v.Parent = game.Workspace["Zombie Storage"]
+		end
+	end
+end)
+local mt = getrawmetatable(game)
+setreadonly(mt, false)
+local backupindex = mt.__namecall
+
+local cachyray,cachTarget
+mt.__namecall = newcclosure(function(...)
+	local Method = getnamecallmethod()
+	local Arguments = {...}
+	local self = Arguments[1]
+	if not checkcaller() then
+		if self == workspace and Method == "FindPartOnRayWithIgnoreList" and tostring(getcallingscript().Name) == "GunController" and Target and active1 then
+			local A_Ray = Arguments[2]
+			local Origin = A_Ray.Origin
+
+			if not cachyray or cachyray ~= A_Ray or cachTarget ~= Target then
+				cachTarget = Target
+				local DirectionNew = ((Origin - Target).Unit) * -1000
+				cachyray = Ray.new(Origin, DirectionNew)
+			end
+
+			Arguments[2] = cachyray
+			table.insert(Arguments[3], self["Map Storage"])
+
+			return backupindex(unpack(Arguments))
+		end
+	end
+	return backupindex(...)
+end)
