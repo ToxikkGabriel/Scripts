@@ -60,7 +60,6 @@ spawn(function()
 				end
 			end)
 			if checkSight() then
-				Path:Stop()
 				myPlayer.Character.Humanoid:MoveTo(createPosition(targetPlayer.Character.HumanoidRootPart.CFrame))
 			else
 				local Goal = createPosition(targetPlayer.Character.HumanoidRootPart.CFrame)
