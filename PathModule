@@ -100,7 +100,7 @@ end
 --Make NPC jump
 local function setJumpState(self)
 	pcall(function()
-		if self._humanoid:GetState() ~= Enum.HumanoidStateType.Jumping and self._humanoid:GetState() ~= Enum.HumanoidStateType.Freefall then
+		if self._humanoid:GetState() ~= Enum.HumanoidStateType.Jumping and self._humanoid:GetState() ~= Enum.HumanoidStateType.Physics and self._humanoid:GetState() ~= Enum.HumanoidStateType.GettingUp and self._humanoid:GetState() ~= Enum.HumanoidStateType.Freefall then
 			self._humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
 		end
 	end)
@@ -128,7 +128,7 @@ local function invokeWaypointReached(self)
 end
 
 local function moveToFinished(self, reached)
-	
+
 	--Stop execution if Path is destroyed
 	if not getmetatable(self) then return end
 
