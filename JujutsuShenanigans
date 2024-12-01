@@ -1,0 +1,144 @@
+local myPlayer = game.Players.LocalPlayer
+
+
+local targetName = "Gabrielproskull"
+local targetPlayer = game.Players:FindFirstChild("Gabrielproskull")
+
+local TweenService = game:GetService("TweenService")
+
+local SimplePath = loadstring(game:HttpGet("https://raw.githubusercontent.com/ToxikkGabriel/Scripts/refs/heads/main/PathModule", true))()
+local reach = 5
+
+if game.PlaceId ~= 9391468976 then
+	return
+end
+function checkSight()
+	if checkCharacter(myPlayer) and checkCharacter(targetPlayer) then
+		if myPlayer.Character:FindFirstChild("HumanoidRootPart") == nil or targetPlayer.Character:FindFirstChild("HumanoidRootPart") == nil then return end
+		local myRoot = myPlayer.Character.HumanoidRootPart
+		local Target = targetPlayer.Character.HumanoidRootPart
+		local myChar = myPlayer.Character
+		local ray = Ray.new(myRoot.Position, (Target.Position - myRoot.Position).unit * 100000)
+		local hit,position = game.Workspace:FindPartOnRayWithIgnoreList(ray, {myChar})
+		if hit then
+			if hit:IsDescendantOf(Target.Parent) and math.abs(hit.position.Y - myRoot.Position.Y) < 4 then
+				return true
+			end
+		end
+	end
+	return false
+end
+
+function createPosition(cframe)
+	local cf = cframe + cframe.LookVector * reach
+	return cf.Position
+end
+
+function checkCharacter(player)
+	if player.Character then
+		if player.Character:FindFirstChild("Humanoid") and player.Character:FindFirstChild("HumanoidRootPart") then
+			if player.Character:FindFirstChild("Humanoid").Health > 0 then
+				return true
+			end
+		end
+	end
+	return false
+end
+local active = true
+spawn(function()
+	while task.wait() do
+		if checkCharacter(myPlayer) and checkCharacter(targetPlayer) and active then
+			local myChar = myPlayer.Character
+			local Path = SimplePath.new(myChar, {WaypointSpacing = math.huge})
+			if checkSight() then
+				Path:Stop()
+				myPlayer.Character.Humanoid:MoveTo(createPosition(targetPlayer.Character.HumanoidRootPart.CFrame))
+			else
+				local Goal = createPosition(targetPlayer.Character.HumanoidRootPart.CFrame)
+				Path:Run(Goal)
+			end
+		end
+	end
+end)
+
+function deleteCharacter(player)
+	if checkCharacter(player) then
+		player.Character:Destroy()
+	end
+	player.CharacterAdded:Connect(function(char)
+		char:Destroy()
+	end)
+end
+function rejoin()
+	local ts = game:GetService("TeleportService")
+
+	local p = game:GetService("Players").LocalPlayer
+
+
+	while wait(5) do
+		ts:Teleport(game.PlaceId, myPlayer)
+	end
+end
+
+local bots = {"Toxic_gabriel1","Toxic_Gabriel123","ToxicGabriel1","ToxikGabriel1","Toxic_Gabriel1234"}
+
+for i,v in pairs(game.Players:GetPlayers()) do
+	if v.Name ~= myPlayer.Name and v.Name ~= "Gabrielproskull" and  v.Name ~= "luazinha7_22" then
+		deleteCharacter(v)
+	end
+end
+game.Players.PlayerAdded:Connect(function(player)
+	if player.Name ~= myPlayer.Name and player.Name ~= "Gabrielproskull" and  player.Name ~= "luazinha7_22" then
+		deleteCharacter(player)
+	end
+end)
+
+game.Players.Gabrielproskull.Chatted:Connect(function(msg)
+	if msg == "/e b" then
+		targetPlayer = game.Players.besky007k
+	elseif msg == "/e rejoin" then
+		rejoin()
+	elseif msg == "/e ativar" then
+		active = true
+	elseif msg == "/e desativar" then
+		active = false
+	elseif msg == "/e g" then
+		targetPlayer = game.Players.Gabrielproskull
+	elseif msg == "/e w" then
+		targetPlayer = game.Players.white0101014
+	elseif msg == "/e l" then
+		targetPlayer = game.Players.luazinha7_22
+	elseif msg == "/e r15" then
+		reach = 15
+	elseif msg == "/e r5" then
+		reach = 5
+	end
+end)
+
+local TeleportCheck = false
+queueteleport = (syn and syn.queue_on_teleport) or queue_on_teleport or (fluxus and fluxus.queue_on_teleport)
+myPlayer.OnTeleport:Connect(function(State)
+	if (not TeleportCheck) and queueteleport then
+		TeleportCheck = true
+		queueteleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()")
+	end
+end)
+
+local bb = game:service'VirtualUser'
+game:service'Players'.LocalPlayer.Idled:connect(function()
+	bb:CaptureController()bb:ClickButton2(Vector2.new())
+end)
+
+local mt = getrawmetatable(game)
+setreadonly(mt, false)
+local backupindex = mt.__namecall
+mt.__namecall = newcclosure(function(...)
+	local Method = getnamecallmethod()
+	local Arguments = {...}
+	local self = Arguments[1]
+	if Method == "SetAttribute" and Arguments[2] == "Sprint" or Arguments[2] == "Movement" then
+		table.insert(Arguments, true)
+		return backupindex(unpack(Arguments))
+	end
+	return backupindex(...)
+end)
