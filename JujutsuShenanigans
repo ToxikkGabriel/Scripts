@@ -45,11 +45,20 @@ function checkCharacter(player)
 	return false
 end
 local active = true
+local look = true
 spawn(function()
 	while task.wait() do
 		if checkCharacter(myPlayer) and checkCharacter(targetPlayer) and active then
 			local myChar = myPlayer.Character
 			local Path = SimplePath.new(myChar, {WaypointSpacing = math.huge})
+			spawn(function()
+				if look then 
+					myPlayer.Character.Humanoid.AutoRotate = false
+					myPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(myPlayer.Character.HumanoidRootPart.Position) * targetPlayer.Character.HumanoidRootPart.CFrame.Rotation
+				else
+					myPlayer.Character.Humanoid.AutoRotate = true
+				end
+			end)
 			if checkSight() then
 				Path:Stop()
 				myPlayer.Character.Humanoid:MoveTo(createPosition(targetPlayer.Character.HumanoidRootPart.CFrame))
@@ -102,6 +111,10 @@ game.Players.Gabrielproskull.Chatted:Connect(function(msg)
 		active = true
 	elseif msg == "/e desativar" then
 		active = false
+	elseif msg == "/e ativarl" then
+		look = true
+	elseif msg == "/e desativarl" then
+		look = false
 	elseif msg == "/e g" then
 		targetPlayer = game.Players.Gabrielproskull
 	elseif msg == "/e w" then
@@ -120,10 +133,9 @@ queueteleport = (syn and syn.queue_on_teleport) or queue_on_teleport or (fluxus 
 myPlayer.OnTeleport:Connect(function(State)
 	if (not TeleportCheck) and queueteleport then
 		TeleportCheck = true
-		queueteleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()")
+		queueteleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/ToxikkGabriel/Scripts/refs/heads/main/JujutsuShenanigans'))()")
 	end
 end)
-
 local bb = game:service'VirtualUser'
 game:service'Players'.LocalPlayer.Idled:connect(function()
 	bb:CaptureController()bb:ClickButton2(Vector2.new())
