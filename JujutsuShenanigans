@@ -47,10 +47,10 @@ end
 local active = true
 local look = true
 spawn(function()
-	while task.wait() do
+	while task.wait(0.2) do
 		if checkCharacter(myPlayer) and checkCharacter(targetPlayer) and active then
 			local myChar = myPlayer.Character
-			local Path = SimplePath.new(myChar, {WaypointSpacing = math.huge})
+			local Path = SimplePath.new(myChar, {WaypointSpacing = 10, AgentWalkableClimb = 1.5})
 			spawn(function()
 				if look then 
 					myPlayer.Character.Humanoid.AutoRotate = false
@@ -60,6 +60,9 @@ spawn(function()
 				end
 			end)
 			if checkSight() then
+				if Path.Status ~= "Idle" then
+					Path:Stop()
+				end
 				myPlayer.Character.Humanoid:MoveTo(createPosition(targetPlayer.Character.HumanoidRootPart.CFrame))
 			else
 				local Goal = createPosition(targetPlayer.Character.HumanoidRootPart.CFrame)
@@ -83,13 +86,13 @@ function rejoin()
 	local p = game:GetService("Players").LocalPlayer
 
 
-	while wait(5) do
+	while wait(1) do
 		ts:Teleport(game.PlaceId, myPlayer)
 	end
 end
 
 local bots = {"Toxic_gabriel1","Toxic_Gabriel123","ToxicGabriel1","ToxikGabriel1","Toxic_Gabriel1234"}
-
+--[[]
 for i,v in pairs(game.Players:GetPlayers()) do
 	if v.Name ~= myPlayer.Name and v.Name ~= "Gabrielproskull" and  v.Name ~= "luazinha7_22" then
 		deleteCharacter(v)
@@ -100,6 +103,7 @@ game.Players.PlayerAdded:Connect(function(player)
 		deleteCharacter(player)
 	end
 end)
+]]
 
 game.Players.Gabrielproskull.Chatted:Connect(function(msg)
 	if msg == "/e b" then
