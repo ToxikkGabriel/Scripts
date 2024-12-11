@@ -91,12 +91,12 @@ end
 local bots = {"Toxic_gabriel1","Toxic_Gabriel123","ToxicGabriel1","ToxikGabriel1","Toxic_Gabriel1234"}
 
 for i,v in pairs(game.Players:GetPlayers()) do
-	if v.Name ~= myPlayer.Name and v.Name ~= "Gabrielproskull" and  v.Name ~= "luazinha7_22" then
+	if v.Name ~= myPlayer.Name and v.Name ~= "Gabrielproskull" then
 		deleteCharacter(v)
 	end
 end
 game.Players.PlayerAdded:Connect(function(player)
-	if player.Name ~= myPlayer.Name and player.Name ~= "Gabrielproskull" and  player.Name ~= "luazinha7_22" then
+	if player.Name ~= myPlayer.Name and player.Name ~= "Gabrielproskull" then
 		deleteCharacter(player)
 	end
 end)
