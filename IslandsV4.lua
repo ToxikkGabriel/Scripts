@@ -1,9 +1,3 @@
-print("Script Source Released on 17.03.2024 (DD/MM/YYYY because Islands is Dead!")
-warn("THIS SCRIPT IS DISCONTINUED FROM NOW!")
-for i = 1, 50 do
-  print("Nekohub on Top | discord.gg/MbsxuDEzgT")
-end
--- This is a pretty old script, so don’t joke about the source – it’s older than 90% of the Roblox community. -- 
 
 repeat wait() until game:IsLoaded()
 
