@@ -293,7 +293,7 @@ function Path:Run(target)
 
 	--Initialize waypoints
 	self._waypoints = self._path:GetWaypoints()
-	self._currentWaypoint = 3
+	self._currentWaypoint = 2
 
 	--Visualize
 	destroyVisualWaypoints(self._visualWaypoints)
