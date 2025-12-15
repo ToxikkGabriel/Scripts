@@ -83,12 +83,14 @@ end
 local function setJumpState(self)
 	pcall(function()
 		if self._humanoid then
-			self._humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+			-- Só pula se NÃO estiver no ar (previne spam de pulo e glitches)
+			if self._humanoid.FloorMaterial ~= Enum.Material.Air then
+				self._humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+			end
 		end
 	end)
 end
 
--- 🔥 LOOP CUSTOMIZADO
 local function customMoveLoop(self)
 	if not self._status == Path.StatusType.Active then return end
 	
@@ -98,18 +100,31 @@ local function customMoveLoop(self)
 	local currentPos = self._agent.PrimaryPart.Position
 	local targetPos = targetWaypoint.Position
 	
-	local moveTarget = Vector3.new(targetPos.X, currentPos.Y, targetPos.Z)
-	local distance = (Vector3.new(targetPos.X, 0, targetPos.Z) - Vector3.new(currentPos.X, 0, currentPos.Z)).Magnitude
+	-- Distância Horizontal (X e Z)
+	local distHoriz = (Vector3.new(targetPos.X, 0, targetPos.Z) - Vector3.new(currentPos.X, 0, currentPos.Z)).Magnitude
+	
+	-- Distância Vertical (Diferença de altura)
+	local heightDiff = math.abs(targetPos.Y - currentPos.Y)
 	
 	if self._bv then
+		-- Ajusta o alvo do movimento mantendo a altura do bot (para não tentar voar pro chão)
+		local moveTarget = Vector3.new(targetPos.X, currentPos.Y, targetPos.Z)
 		local dir = (moveTarget - currentPos).Unit
+		
+		-- Lógica de Pulo
 		if targetWaypoint.Action == Enum.PathWaypointAction.Jump then
 			setJumpState(self)
 		end
+		
 		self._bv.Velocity = dir * self._speed
 	end
 
-	if distance < 3.5 then
+	-- 🔥 CORREÇÃO DO BURACO:
+	-- Só considera que "chegou" se estiver perto horizontalmente (< 3.5)
+	-- E se a diferença de altura for aceitável (< 5 studs).
+	-- Se o ponto estiver muito fundo num buraco (heightDiff > 5), ele não dispara o "chegou"
+	-- fazendo o bot continuar andando até cair no buraco pela gravidade.
+	if distHoriz < 3.5 and heightDiff < 5 then
 		self:_moveToFinished(true)
 	end
 end
