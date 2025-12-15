@@ -83,7 +83,7 @@ end
 local function setJumpState(self)
 	pcall(function()
 		if self._humanoid then
-			self._humanoid.Jump = true
+			self._humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
 		end
 	end)
 end
